@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diabetes Prediction App - Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style id="app-style">
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: #1a202c;
+      min-height: 100vh;
+    }
+    
+    .form-container {
+      background-color: #fff;
+      border-radius: 0.75rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .accent-color {
+      color: #2dd4bf;
+    }
+    
+    .accent-bg {
+      background-color: #2dd4bf;
+    }
+    
+    .accent-border {
+      border-color: #2dd4bf;
+    }
+    
+    .form-input {
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      border-color: #2dd4bf;
+      box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.25);
+    }
+    
+    .btn-primary {
+      background-color: #2dd4bf;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background-color: #14b8a6;
+    }
+    
+    .logo-pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .medical-icon {
+      color: #2dd4bf;
+    }
+
+    .toggle-checkbox {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+    .toggle-label {
+      display: inline-block;
+      width: 3rem;
+      height: 1.5rem;
+      background: #ccc;
+      border-radius: 1.5rem;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .toggle-label::after {
+      content: "";
+      position: absolute;
+      top: 0.125rem;
+      left: 0.125rem;
+      width: 1.25rem;
+      height: 1.25rem;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    .toggle-checkbox:checked + .toggle-label {
+      background: #2dd4bf;
+    }
+    .toggle-checkbox:checked + .toggle-label::after {
+      transform: translateX(1.5rem);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center p-4 bg-gray-900 min-h-screen">
+    <div class="form-container w-full max-w-xl p-6 md:p-8">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center">
+                <div class="inline-block logo-pulse">
+                    <i class="fas fa-heartbeat text-4xl medical-icon"></i>
+                </div>
+                <h1 class="text-2xl font-bold ml-3 text-gray-800">Diabetes Predictor</h1>
+            </div>
+            <button type="submit" form="logoutForm" class="btn-primary px-4 py-2 rounded-md">Logout</button>
+        </div>
+
+    <form id="predictForm" method="POST" action="{% url 'home' %}" class="mb-4">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- age -->
+            <div>
+                <label for="age" class="block text-gray-700 text-sm font-medium mb-1">Age</label>
+                <input type="number" id="age" name="age" min="0" max="120" required class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none">  
+            </div> 
+
+            <!-- gender -->
+            <div>
+                <label class="block text-gray-700 text-sm font-medium mb-1">Gender</label>
+                <div class="flex space-x-4">
+                    <div class="flex items-center">
+                        <input type="radio" id="male" name="Gender" value="Male" required class="mr-2">
+                        <label for="male" class="text-gray-700">Male</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="radio" id="female" name="Gender" value="Female" required class="mr-2">
+                        <label for="female" class="text-gray-700">Female</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- symptoms field -->
+        
+        <div class="mt-4">
+            <label class="block text-gray-700 text-sm font-medium mb-2">Symptoms</label> 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-4">
+                {% for field, label in symptoms %}
+                <div class="flex items-center justify-between">
+                    <label for="{{ field }}" class="text-gray-700">{{ label }}</label>
+                    <div>
+                        <input type="checkbox" id="{{ field }}" name="{{ field }}" class="toggle-checkbox" />
+                        <label for="{{ field }}" class="toggle-label"></label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+
+        <!-- submit button -->
+        <div class="mt-6">
+            <button type="submit" class="btn-primary w-full py-3 rounded-md">Predict</button>
+        </div>
+    </form>
+
+    <!-- loading spinner -->
+    <div id="loadingSpinner" class="hidden text-center my-4">
+      <div role="status">
+        <svg class="inline w-8 h-8 text-gray-200 animate-spin fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M100 50.5908C100..." fill="currentColor"/>
+          <path d="M93.9686 39.0409..." fill="currentFill"/>
+        </svg>
+        <span class="sr-only">Loading...</span>
+        <p>Predicting, please wait...</p>
+      </div>
+    </div>
+
+    <!-- result -->
+    {% if result %}
+    <div id="resultSection" class="mt-8 p-6 bg-white rounded-lg shadow-md border border-green-300">
+      <h3 class="text-lg font-semibold text-green-800 mb-2">Diabetes Prediction Result</h3>
+        <p class="font-medium">Prediction: {{ result|safe }}</p>
+        <p class="font-medium">Symptoms selected: {{ selected_symptoms|join:", " }}</p>  
+    </div>
+    {% endif %}
+
+    <script> 
+      const resultExists = "{{ result|yesno:'true,false' }}" === "true";
+
+      document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("predictForm");
+      const spinner = document.getElementById("loadingSpinner");
+      const resultSection = document.getElementById("resultSection");
+
+      if (resultExists) {
+      // Initially hide result section if prediction exists
+        resultSection?.classList.add("hidden");
+
+      // Show spinner, then delay showing result
+        spinner.classList.remove("hidden");
+
+        setTimeout(() => {
+          spinner.classList.add("hidden");
+          resultSection?.classList.remove("hidden");
+        }, 2000);
+      }
+
+      // When form is submitted: show spinner, hide result section
+      form?.addEventListener("submit", function () {
+        spinner.classList.remove("hidden");
+        resultSection?.classList.add("hidden");
+      });
+    });
+    
+    </script>
+
+    <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+      <div class="flex">
+          <div class="flex-shrink-0">
+            <i class="fas fa-info-circle text-blue-500"></i>
+          </div>
+            <div class="ml-3">
+              <h4 class="text-sm font-medium text-blue-800">Important Note</h4>
+              <div class="mt-1 text-sm text-blue-700">
+                This prediction is based on machine learning algorithms and should not replace professional medical advice. Please consult with your healthcare provider for proper diagnosis and treatment.
+              </div>
+            </div>
+      </div>
+    </div>
+
+    </div>
+    <form id="logoutForm" method="post" action="{% url 'logout' %}" class="hidden">
+    {% csrf_token %}
+    </form>  
+
+</body>
+</html>
+ 
