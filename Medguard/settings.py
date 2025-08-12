@@ -85,7 +85,7 @@ DATABASES = {
         "NAME": config('DB_NAME'),
         "USER": config('DB_USER'),
         "PASSWORD": config('DB_PASSWORD'),
-        "HOST": config('DB_HOST'),
+        "HOST": config('DB_HOST').replace("postgresql://", "").split("@")[-1].split("/")[0],  # Ensure the path is correctly formatted
         "PORT": config('DB_PORT', cast=int),
     }
 }
