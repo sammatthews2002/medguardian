@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import os
 import joblib
 import numpy as np
 from .models import DiabetesPrediction
@@ -8,7 +9,11 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
-model = joblib.load('D:\\data science intern\\clinical_diabetes_model.pkl')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MODEL_PATH = os.path.join(BASE_DIR, 'diabetes', 'model_files', 'clinical_diabetes_model.pkl')
+
+model = joblib.load(MODEL_PATH)
 
 symptoms = [
     ('Polyuria', 'Excessive Urine'),
