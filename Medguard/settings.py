@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,14 +81,11 @@ WSGI_APPLICATION = "Medguard.wsgi.application"
 
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",  # Change to your database engine
-        "NAME": config('DB_NAME'),
-        "USER": config('DB_USER'),
-        "PASSWORD": config('DB_PASSWORD'),
-        "HOST": config('DB_HOST').replace("postgresql://", "").split("@")[-1].split("/")[0],  # Ensure the path is correctly formatted
-        "PORT": config('DB_PORT', cast=int),
-    }
+    "default": dj_database_url.config(
+        default=config('DATABASE_URL'),
+        conn_max_age=600,   # Persistent connections
+        ssl_require=True    # Render Postgres requires SSL
+    )
 }
 
 
